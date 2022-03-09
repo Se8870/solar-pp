@@ -5,17 +5,19 @@
 #define _inc_general_command_included
 
 #include <YSI_Visual\y_commands>
+#include <YSI_Server\y_colors>
+
 #include <sscanf2>
 
 YCMD:help(playerid, string:params[], help)
 {
-    SendClientMessage(playerid, 0xFFFFFFAA, "/lobby, /spec");
+    SendClientMessage(playerid, X11_GRAY, "HELP: /lobby, /spec");
     return 1;
 }
 
 YCMD:spec(playerid, string:params[], help)
 {
-    SendClientMessage(playerid, 0xFFFFFFAA, "Comming soon");
+    SendClientMessage(playerid, X11_GRAY, "Comming soon");
     return 1;
 }
 
@@ -26,19 +28,19 @@ YCMD:lobby(playerid, string:params[], help)
 
     new cmdCategory[24], cmdValue[128];
     if (sscanf(params, "s[24]S()[128]", cmdCategory, cmdValue))
-        return SendClientMessage(playerid, 0xFFFFFFAA, "/lobby [join/now/leave]");
+        return SendClientMessage(playerid, X11_GRAY, "SYNTAX: /lobby [join/now/leave]");
 
     if (!strcmp(cmdCategory, "join", true))
     {
         new lobbyid;
         if (sscanf(cmdValue, "i", lobbyid))
-            return SendClientMessage(playerid, 0xFFFFFFAA, "/lobby [join] <lobby id>");
+            return SendClientMessage(playerid, X11_GRAY, "SYNTAX: /lobby [join] <lobby id>");
         
         if (!(0 <= lobbyid <= 2))
-            return SendClientMessage(playerid, 0xFFFFFFAA, "Invalid lobby ids");
+            return SendClientMessage(playerid, X11_TOMATO, "ERROR: Invalid lobby ids");
     
         JoinLobby(playerid, lobbyid);
-        SendClientMessage(playerid, 0xFFFFFFAA, "Joining lobbys");
+        SendClientMessage(playerid, X11_LIGHTBLUE, "GAME: "WHITE"Joining lobbys");
         return 1;
     }
     else if (!strcmp(cmdCategory, "now", true))
@@ -52,9 +54,9 @@ YCMD:lobby(playerid, string:params[], help)
     else if (!strcmp(cmdCategory, "leave", true))
     {
         PutPlayerInLobbyMenu(playerid);
-        SendClientMessage(playerid, 0xFFFFFFAA, "Leaving lobbys");
+        SendClientMessage(playerid, X11_LIGHTBLUE, "GAME: "WHITE"Leaving lobbys");
         return 1;
     }
-    SendClientMessage(playerid, 0xFFFFFFAA, "Invalid command category");
+    SendClientMessage(playerid, X11_TOMATO, "ERROR: Invalid command category");
     return 1;
 }  

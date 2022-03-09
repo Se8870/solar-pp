@@ -3,11 +3,12 @@
 #define CGEN_MEMORY 20000
 
 //#include "database.inc"
-#include "user.inc"
-#include "lobby.inc"
-#include "game.inc"
+#include <user>
+#include <lobby>
+#include <game>
 
 #include "commands\general.inc"
+#include <textdraw\message>
 
 main()
 {
