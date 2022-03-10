@@ -40,8 +40,6 @@ task CoreTimer[1000]()
                     continue;
                 }
 
-                Group:Group_SetBalanced(Group_GetRandom, Group:g0, Group:g1, Group:...)
-
                 foreach (new j : GroupMember[GetLobbyGroupId(i)])
                 {
                     // It's actually showing up to 8 seconds, the timer is a lie.
