@@ -132,7 +132,7 @@ hook OnGameModeInit()
 hook OnPlayerSpawn(playerid)
 {
     SetPlayerInterior(playerid, 10);
-    SetPlayerVirtualWorld(playerid, playerid + g_sPlayerCurrentLobby[playerid]);
+    SetPlayerVirtualWorld(playerid, g_sPlayerCurrentLobby[playerid] + 100);
 
     JoinTeam(playerid, TEAM_NEUTRAL);
     return 1;
