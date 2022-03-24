@@ -48,12 +48,7 @@ hook OnPlayerRequestClass(playerid, classid)
 	// If the player has joined, but pressed F4 or smth.
 	if (IsPlayerLoggedIn(playerid) && !IsPlayerKicked(playerid) && GetPlayerCurrentLobby(playerid) != INVALID_LOBBY_ID)
 	{
-		// Put them in the current lobby without spawning.
-		TogglePlayerSpectating(playerid, true);
-
-    	// Spawn them just in case.
-    	SetSpawnInfo(playerid, NO_TEAM, 1, 1726.18, -1641.00, 20.23, 0.0, 0, 0, 0, 0, 0, 0);
-		TogglePlayerSpectating(playerid, false);
+		PutPlayerInCurrentLobby(playerid);
 		return 1;
 	}
 	return 1;
