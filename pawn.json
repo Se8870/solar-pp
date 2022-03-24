@@ -1,0 +1,35 @@
+{
+	"user": "Solarize-Roleplay",
+	"repo": "solar-pp",
+	"contributors": [
+		"Se8870",
+		"Abielfrl"
+	],
+	"entry": "gamemodes/main.pwn",
+	"output": "gamemodes/main.amx",
+	"dependencies": [
+		"pawn-lang/samp-stdlib",
+		"pawn-lang/YSI-Includes@5.x"
+	],
+	"local": true,
+	"build": {
+		"includes": [
+			"gamemodes",
+			"gamemodes/core",
+			"gamemodes/core/game",
+			"gamemodes/core/lobby",
+			"gamemodes/core/team"
+		],
+		"constants": {
+			"YSI_NO_HEAP_MALLOC": "",
+			"MAX_PLAYERS": "400"
+		}
+	},
+	"runtime": {
+		"version": "0.3.7",
+		"mode": "server",
+		"rcon_password": "hardestpasswordknowntoman121313234",
+		"port": 7777,
+		"maxplayers": 60
+	}
+}
