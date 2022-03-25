@@ -29,6 +29,11 @@ Init_Team()
     return 1;
 }
 
+Group:GetGroupTeamId(team)
+{
+    return (g_sGroupLists{team});
+}
+
 GetGroupTeamMemberCount(team)
 {
     // Give false return if the team out of range.

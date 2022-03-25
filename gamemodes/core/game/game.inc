@@ -23,7 +23,6 @@ new Iterator:QueuePlayer[MAX_LOBBY]<MAX_PLAYERS>;
 #include <game_monitoring>
 #include <game_timer>
 
-
 #if !defined _inc_game_init_included
-    Init_Game() return print("Module \"game.inc\"... FAIL"), 0;
+    Init_Game() return print("Module \"game.inc\"... FAIL");
 #endif

@@ -20,5 +20,5 @@
 #include <lobby_msg>
 
 #if !defined _inc_lobby_init_included
-    Init_Lobby() return print("Module \"lobby.inc\"... FAIL"), 0;
+    Init_Lobby() return print("Module \"lobby.inc\"... FAIL");
 #endif
