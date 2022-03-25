@@ -18,11 +18,15 @@
 			"gamemodes/core",
 			"gamemodes/core/game",
 			"gamemodes/core/lobby",
-			"gamemodes/core/team"
+			"gamemodes/core/team",
+			"gamemodes/core/commands",
+			"gamemodes/core/commands/general",
+			"gamemodes/core/commands/robbers",
+			"gamemodes/core/commands/police"
 		],
 		"constants": {
 			"YSI_NO_HEAP_MALLOC": "",
-			"MAX_PLAYERS": "400"
+			"MAX_PLAYERS": "60"
 		}
 	},
 	"runtime": {
