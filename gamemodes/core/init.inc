@@ -12,9 +12,6 @@
 #include <team>
 #include <game>
 
-// Include 
-#include <commands>
-
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit()
 {
@@ -28,7 +25,6 @@ hook OnGameModeInit()
     if (Init_Lobby()) moduleCount ++;
     if (Init_Team()) moduleCount ++;
     if (Init_Game()) moduleCount ++;
-	if (Init_Commands()) moduleCount ++;
 
     // Print the result.
     printf("Loaded %d modules.", moduleCount);

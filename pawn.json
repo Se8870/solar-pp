@@ -18,11 +18,7 @@
 			"gamemodes/core",
 			"gamemodes/core/game",
 			"gamemodes/core/lobby",
-			"gamemodes/core/team",
-			"gamemodes/core/commands",
-			"gamemodes/core/commands/general",
-			"gamemodes/core/commands/robbers",
-			"gamemodes/core/commands/police"
+			"gamemodes/core/team"
 		],
 		"constants": {
 			"YSI_NO_HEAP_MALLOC": "",
