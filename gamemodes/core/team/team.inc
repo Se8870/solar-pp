@@ -19,4 +19,3 @@
 #if !defined _inc_team_init_included
     Init_Team() return print("Module \"team.inc\"... FAIL");
 #endif
-

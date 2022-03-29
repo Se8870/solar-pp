@@ -41,7 +41,7 @@ hook OnPlayerRequestClass(playerid, classid)
 		
 		// Toggle spectate and show the menus.
 		TogglePlayerSpectating(playerid, true);
-		ShowLobbyMenuForPlayer(playerid);	
+		ShowLobbyMenuForPlayer(playerid);
 		return 1;
 	}
 

@@ -21,11 +21,13 @@ static
 
 stock bool:IsPlayerKicked(playerid)
 {
+    printf("Kicked? %d", g_sPlayerKicked{playerid});
     return (g_sPlayerKicked{playerid});
 }
 
 stock bool:IsPlayerLoggedIn(playerid)
 {
+    printf("LoggedIn? %d", g_sPlayerLoggedIn{playerid});
     return (g_sPlayerLoggedIn{playerid});
 }
 
@@ -84,7 +86,7 @@ hook OnPlayerStateChange(playerid, newstate, oldstate)
     return 1;
 }
 
-hook OnPlayerDisconnect(playerid, reason)
+hook OnPlayerConnect(playerid)
 {
     // Reset states
     g_sPlayerKicked{playerid} = false;

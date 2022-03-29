@@ -12,7 +12,7 @@
 #include <utils\common>
 
 static
-    Group:g_sLobbyLists[MAX_LOBBY char],
+    Group:g_sLobbyLists[MAX_LOBBY], // It seems like we cannot do anything much if the data is packed
     Lobby:g_sPlayerCurrentLobby[MAX_PLAYERS char] = Lobby:-1;
 
 static stock g_sPlayerLobbyName[MAX_LOBBY][MAX_LOBBY_NAME] = {
@@ -27,7 +27,7 @@ Init_Lobby()
 {
     for (new Lobby:i = Lobby:0; i < MAX_LOBBY; i ++)
     {
-        g_sLobbyLists{i} = Group_Create(g_sPlayerLobbyName[i]);
+        g_sLobbyLists[i] = Group_Create(g_sPlayerLobbyName[i]);
     }
 
     print("Module \"lobby.inc\"... OK");
@@ -36,11 +36,10 @@ Init_Lobby()
 
 GetLobbyName(Lobby:id, string:output[], len = MAX_LOBBY_NAME)
 {
-    // Check if user have any lobby joined in.
-    if (id != INVALID_LOBBY_ID)
+    if (NOT_IN_RANGE(_:id, 0, _:MAX_LOBBY) || id == INVALID_LOBBY_ID)
         return 0;
-
-    strcopy(output, Group_GetName(g_sLobbyLists{id}), len);
+    
+    strcopy(output,g_sPlayerLobbyName[id], len);
     return 1;
 }
 
@@ -67,7 +66,7 @@ GetCurrentLobbyName(playerid, string:output[], len = MAX_LOBBY_NAME)
 GetCurrentLobbyInfo(playerid, &Lobby:id, string:name[], len = MAX_LOBBY_NAME)
 {
     // Check if user have any lobby joined in.
-    if (g_sPlayerCurrentLobby{playerid} != INVALID_LOBBY_ID)
+    if (!IsPlayerConnected(playerid) || g_sPlayerCurrentLobby{playerid} == INVALID_LOBBY_ID)
         return 0;
 
     id = g_sPlayerCurrentLobby{playerid};
@@ -79,14 +78,14 @@ PutPlayerInLobby(playerid, Lobby:id)
 {
     // Check if user have any lobby joined in.
     if (g_sPlayerCurrentLobby{playerid} != INVALID_LOBBY_ID)
-        Group_SetPlayer(g_sLobbyLists{id}, playerid, false);
+        Group_SetPlayer(g_sLobbyLists[id], playerid, false);
 
     // Check if the lobby selected is full.
-    if (Group_GetCount(g_sLobbyLists{id}) > MAX_PLAYER_IN_LOBBY)
+    if (Group_GetCount(g_sLobbyLists[id]) > MAX_PLAYER_IN_LOBBY)
         return 0;
 
     // If not, just set them to corresponding lobby.
-    Group_SetPlayer(g_sLobbyLists{id}, playerid, true);
+    Group_SetPlayer(g_sLobbyLists[id], playerid, true);
     g_sPlayerCurrentLobby{playerid} = id;
 
     // Spawn them just in case.
@@ -130,7 +129,6 @@ PutPlayerInCurrentLobby(playerid)
 
 ResetPlayerLobby(playerid)
 {
-    Group_SetPlayer(g_sLobbyLists{g_sPlayerCurrentLobby{playerid}}, playerid, false);
+    Group_SetPlayer(g_sLobbyLists[g_sPlayerCurrentLobby{playerid}], playerid, false);
     return 1;
 }
-
