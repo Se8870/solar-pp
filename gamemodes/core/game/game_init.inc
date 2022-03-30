@@ -9,11 +9,15 @@
 
 #define _inc_game_init_included
 
+#include <YSI_Data\y_foreach>
 #include <utils\vehicles>
 
 static
     g_sRobbersVehicle,
     g_sPoliceVehicles[2 char];
+
+static
+     Iterator:QueuePlayer[MAX_LOBBY]<MAX_PLAYERS>;
 
 Init_Game()
 {
@@ -22,15 +26,18 @@ Init_Game()
     return 1;
 }
 
+PrepareGameForLobbyId(Lobby:id)
+{
+    foreach (new pid : GroupMember(GetLobbyGroupId(id)))
+    {
+        Iter_Add(QueuePlayer[id], pid);
+        SetPlayerInGame(pid, true);
+    }
+}
+
 // Poorly written algoritm, many thanks to Y_less to give much idea.
 SpreadPlayers(Lobby:id) // ID = lobbyid
 {
-    // Toggle them to mark they are in-game.
-    foreach (new pid : QueuePlayer[id])
-    {
-        SetPlayerInGame(pid, true);
-    }
-
     new 
         count = (Iter_Count(QueuePlayer[id])) / GAME_MIN_REQUIRED_PLAYERS;
 
