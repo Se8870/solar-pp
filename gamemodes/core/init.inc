@@ -18,6 +18,14 @@ hook OnGameModeInit()
     new
         moduleCount;
 
+	print("Configuring ingame environment...");
+	
+	DisableInteriorEnterExits();
+	UsePlayerPedAnims();
+	EnableStuntBonusForAll(false);
+	SetWorldTime(00);
+	AllowAdminTeleport(false);
+
     // Init each module.
     print("Initializing module...");
     
