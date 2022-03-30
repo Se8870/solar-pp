@@ -23,7 +23,7 @@ ShowLobbyMenuForPlayer(playerid)
         new szLobbyName[MAX_LOBBY_NAME];
     
         GetLobbyName(i, szLobbyName);
-        format(szLobbyList, sizeof(szLobbyList), "%s%s\t%d/"#MAX_PLAYER_IN_LOBBY"\n", szLobbyList, szLobbyName, _:i);
+        format(szLobbyList, sizeof(szLobbyList), "%s%s\t%d/"#MAX_PLAYER_IN_LOBBY"\n", szLobbyList, szLobbyName, GetPlayerLobbyCount(i));
     }
 
     inline Dialog_LobbyMenuResponse(response, listitem, string:inputtext[])
