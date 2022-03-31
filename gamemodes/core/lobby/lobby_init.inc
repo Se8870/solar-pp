@@ -92,7 +92,7 @@ PutPlayerInLobby(playerid, Lobby:id)
     SetSpawnInfo(playerid, 0, 1, 1726.18, -1641.00, 20.23, 0.0, 0, 0, 0, 0, 0, 0);
     
     SetPlayerInterior(playerid, 18);
-    SetPlayerVirtualWorld(playerid, _:id + 100);
+    SetPlayerVirtualWorld(playerid, _:id + LOBBY_BASE_WORLD_ID);
 
     // If there is spectating code, and the player not yet spawned
     // Just toggle it off, it'll trigger OnPlayerSpawn and SetSpawnInfo
@@ -113,7 +113,7 @@ PutPlayerInCurrentLobby(playerid)
     SetSpawnInfo(playerid, 0, 1, 1726.18, -1641.00, 20.23, 0.0, 0, 0, 0, 0, 0, 0);
     
     SetPlayerInterior(playerid, 18);
-    SetPlayerVirtualWorld(playerid, _:g_sPlayerCurrentLobby{playerid} + 100);
+    SetPlayerVirtualWorld(playerid, _:g_sPlayerCurrentLobby{playerid} + LOBBY_BASE_WORLD_ID);
 
     // Detects method of spawning
     if (IsPlayerSpectating(playerid))

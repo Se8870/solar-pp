@@ -1,4 +1,3 @@
-
 #if defined _inc_game_init
     #undef _inc_game_init
 #endif
@@ -9,76 +8,100 @@
 
 #define _inc_game_init_included
 
-#include <YSI_Data\y_foreach>
+#include <YSI_Data\y_iterate>
 #include <utils\vehicles>
 
 static
-    g_sRobbersVehicle,
-    g_sPoliceVehicles[2 char];
-
-static
-     Iterator:QueuePlayer[MAX_LOBBY]<MAX_PLAYERS>;
+    g_sRobbersVehicles,
+    g_sPoliceVehiclesA,
+    g_sPoliceVehiclesB,
+    Iterator:QueuePlayer[MAX_LOBBY]<MAX_PLAYERS>;
 
 Init_Game()
 {
+    // Need to be in sync before we can use it.
     Iter_Init(QueuePlayer);
+
     print("Module \"game.inc\"... OK");
     return 1;
 }
 
-PrepareGameForLobbyId(Lobby:id)
+PutPlayerInQueue(playerid, Lobby:id)
 {
-    foreach (new pid : GroupMember(GetLobbyGroupId(id)))
-    {
-        Iter_Add(QueuePlayer[id], pid);
-        SetPlayerInGame(pid, true);
-    }
+    if (NOT_IN_RANGE(_:id, 0, _:MAX_LOBBY) || id == INVALID_LOBBY_ID)
+        return 0;
+
+    Iter_Add(QueuePlayer[id], playerid);
+    return 1;
 }
 
-// Poorly written algoritm, many thanks to Y_less to give much idea.
-SpreadPlayers(Lobby:id) // ID = lobbyid
+/*
+    I presented to you, the MOST COMPLICATED SHIT I'VE EVER WRITE FOR THIS SHIT
+    Big thanks for y_less for giving me the basics of how spreading this works.
+*/
+SpreadPlayersInLobby(Lobby:id)
 {
+    if (NOT_IN_RANGE(_:id, 0, _:MAX_LOBBY) || id == INVALID_LOBBY_ID)
+        return 0;
+
     new 
-        count = (Iter_Count(QueuePlayer[id])) / GAME_MIN_REQUIRED_PLAYERS;
+        pid,
+        countRobber = Iter_Count(QueuePlayer[id]) / 2;
 
-    // Declare pid for later use
-    new pid;
-
-    while (count--)
+    while (countRobber--)
     {
         pid = Iter_Random(QueuePlayer[id]);
-
-        if (!IsValidVehicle(g_sRobbersVehicle)) 
+        
+        // Create the vehicle if not have
+        if (!IsValidVehicle(g_sRobbersVehicles))
         {
-            g_sRobbersVehicle = CreateVehicle(421, 1555.2266, -1627.7550, 13.3828, 90.0, 3, 3, -1);
+            g_sRobbersVehicles = CreateVehicle(421, 1555.2266, -1627.7550, 13.3828, 90.0, 3, 3, -1);
+            SetVehicleVirtualWorld(g_sRobbersVehicles, _:id + GAME_BASE_WORLD_ID);
         }
 
-        PutPlayerInVehicle(pid, g_sRobbersVehicle, GetVehicleNextSeat(g_sRobbersVehicle, 0));
-        GivePlayerWeapon(pid, 24, 10000);
+        SetPlayerInterior(pid, 0);
+        SetPlayerVirtualWorld(pid, _:id + GAME_BASE_WORLD_ID);
+        PutPlayerInVehicle(pid, g_sRobbersVehicles, GetVehicleNextSeat(g_sRobbersVehicles, 0));
 
+        // We remove the player from queue
+        Iter_Remove(QueuePlayer[id], pid);
+
+        // Add it to the robber team
         PutPlayerInRobberTeam(pid);
 
-        Iter_Remove(QueuePlayer[id], pid);
+        // And set the guns
+        GivePlayerWeapon(pid, 30, 5000);
+        GivePlayerWeapon(pid, 25, 5000);
+        GivePlayerWeapon(pid, 24, 5000);
+        GivePlayerWeapon(pid, 1, 1);
+
+        printf("The player %d should be in robbers car", pid);
     }
 
-    // Initialize our police vehicle before going to put them
-    // It's required to avoid much fucking pain
-    g_sPoliceVehicles{0} = CreateVehicle(490, 1572.7791, -1625.1616, 13.3828, 90.0, -1, -1, -1);
-
-    // Always check if the count more than 2 leftovers.
-    if (Iter_Count(QueuePlayer[id]) > 2)
-    {
-        g_sPoliceVehicles{1} = CreateVehicle(490, 1572.7791, -1625.1616, 13.3828, 90.0, -1, -1, -1);
-    }
-
+    new leftoverCount;
     foreach (pid : QueuePlayer[id])
     {
-        // Create seperate seats.
+        if (!IsValidVehicle(g_sPoliceVehiclesA))
+        {
+            g_sPoliceVehiclesA = CreateVehicle(596, 1572.8396, -1630.3389, 13.3828, 90.0, -1, -1, -1);
+            SetVehicleVirtualWorld(g_sPoliceVehiclesA, _:id + GAME_BASE_WORLD_ID);
+        }
+        else if (!IsValidVehicle(g_sPoliceVehiclesB) && leftoverCount > 2)
+        {
+            g_sPoliceVehiclesA = CreateVehicle(596, 1572.7791, -1625.1616, 13.3828, 90.0, -1, -1, -1);
+            SetVehicleVirtualWorld(g_sPoliceVehiclesA, _:id + GAME_BASE_WORLD_ID);
+        }
+
+        // Set stuff first
+        SetPlayerInterior(pid, 0);
+        SetPlayerVirtualWorld(pid, _:id + GAME_BASE_WORLD_ID);
+
+         // Create seperate seats.
         new 
-            nextSeatA = GetVehicleNextSeat(g_sPoliceVehicles{0}, 0);
+            nextSeatA = GetVehicleNextSeat(g_sPoliceVehiclesA, 0);
 
         /* NOTE:
-            This is matter because first when the `count` is 0, it's just trying to set the leftover
+            This is matter because first when the `leftoverCount` is 0, it's just trying to set the leftover
             to the primary car, after the count already at 3 or more, it would be balanced if the 
             left less than right but if it's equal, then seat A would be filled until full.
             
@@ -86,23 +109,33 @@ SpreadPlayers(Lobby:id) // ID = lobbyid
             I'm too lazy to add more car becuase it's just for fun project and not intended
             for seriousness.
         */
-        if (count > 2)
+        if (leftoverCount > 2)
         {   
             new
-                nextSeatB = GetVehicleNextSeat(g_sPoliceVehicles{1}, 0);
+                nextSeatB = GetVehicleNextSeat(g_sPoliceVehiclesB, 0);
 
             if (nextSeatA > nextSeatB)
             {
-                PutPlayerInVehicle(pid, g_sPoliceVehicles{1}, nextSeatB);
-                continue; // We skip after set the vehicle to generate next person.
+                PutPlayerInVehicle(pid, g_sPoliceVehiclesB, nextSeatB);
+            }
+            else
+            {
+                PutPlayerInVehicle(pid, g_sPoliceVehiclesA, nextSeatA);
             }
         }
-        PutPlayerInVehicle(pid, g_sPoliceVehicles{0}, nextSeatA);
+        
+        // Finally we can set the rest of them to police team
         PutPlayerInPoliceTeam(pid);
+        
+        // Set the gun too!
+        GivePlayerWeapon(pid, 31, 5000);
+        GivePlayerWeapon(pid, 23, 5000);
+        GivePlayerWeapon(pid, 3, 1);
 
-        GivePlayerWeapon(pid, 24, 10000);
-        count ++;
+        printf("The player %d should in the police car", pid);
+        leftoverCount ++;
     }
     Iter_Clear(QueuePlayer[id]);
+    CallLocalFunction(#OnGamePreparing, "i", _:id);
     return 1;
 }

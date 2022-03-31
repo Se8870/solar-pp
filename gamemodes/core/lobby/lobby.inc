@@ -14,6 +14,7 @@
 #define     INVALID_LOBBY_ID        Lobby:-1
 #define     MAX_PLAYER_IN_LOBBY     12
 #define     MAX_LOBBY_NAME          16 + 1
+#define     LOBBY_BASE_WORLD_ID     100
 
 #include <lobby_init>
 #include <lobby_gui>
