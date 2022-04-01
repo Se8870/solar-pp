@@ -12,6 +12,7 @@
 		"pawn-lang/YSI-Includes@5.x",
 		"oscar-broman/samp-weapon-config",
 		"samp-incognito/samp-streamer-plugin:v2.9.5",
+		"Y-less/sscanf",
 		"NexiusTailer/Nex-AC"
 	],
 	"local": true,
