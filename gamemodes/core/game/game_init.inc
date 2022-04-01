@@ -92,10 +92,6 @@ SpreadPlayersInLobby(Lobby:id)
             SetVehicleVirtualWorld(g_sPoliceVehiclesA, _:id + GAME_BASE_WORLD_ID);
         }
 
-        // Set stuff first
-        SetPlayerInterior(pid, 0);
-        SetPlayerVirtualWorld(pid, _:id + GAME_BASE_WORLD_ID);
-
          // Create seperate seats.
         new 
             nextSeatA = GetVehicleNextSeat(g_sPoliceVehiclesA, 0);
@@ -116,14 +112,23 @@ SpreadPlayersInLobby(Lobby:id)
 
             if (nextSeatA > nextSeatB)
             {
+                    
+                // Set stuff first
+                SetPlayerPos(pid, 1572.7791, -1625.1616, 13.3828);
+                SetPlayerInterior(pid, 0);
+                SetPlayerVirtualWorld(pid, _:id + GAME_BASE_WORLD_ID);
+
                 PutPlayerInVehicle(pid, g_sPoliceVehiclesB, nextSeatB);
-            }
-            else
-            {
-                PutPlayerInVehicle(pid, g_sPoliceVehiclesA, nextSeatA);
             }
         }
         
+        // Set stuff first
+        SetPlayerPos(pid, 1572.8396, -1630.3389, 13.3828);
+        SetPlayerInterior(pid, 0);
+        SetPlayerVirtualWorld(pid, _:id + GAME_BASE_WORLD_ID);
+
+        PutPlayerInVehicle(pid, g_sPoliceVehiclesA, nextSeatA);
+
         // Finally we can set the rest of them to police team
         PutPlayerInPoliceTeam(pid);
         
