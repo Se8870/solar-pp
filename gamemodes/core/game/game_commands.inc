@@ -9,6 +9,7 @@
 
 #define _inc_game_commands_included
 
+#include <sscanf2>
 #include <YSI_Visual\y_commands>
 
 // Cuff command
@@ -53,10 +54,49 @@ public OnPlayerCuff(playerid, Float:x, Float:y, Float:z)
         return 0;
     }
 
-    // Reset the weapons for now
     SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CUFFED);
-    ResetPlayerWeapons(playerid);
+    //ResetPlayerWeapons(playerid);
 
     SendClientMessage(playerid, 0xFFFFFFAA, "You have been cuffed");
     return 1;
+}
+
+COMMAND__ uncuff(playerid, string:args[], help)
+{
+    if (help)
+    {
+        SendClientMessage(playerid, 0xFFFFFFAA, "HELP: This command used for cuff, use \"/cuff <playerid>\" if you wish to uncuff someone");
+        return 1;
+    }
+
+    new targetid;
+    sscanf(args, "R(0xFFFF)", targetid);
+
+    if (targetid == INVALID_PLAYER_ID)
+        targetid = playerid;
+
+    if (!IsPlayerInGame(targetid) || GetPlayerState(targetid) != PLAYER_STATE_ONFOOT || GetPlayerGroupTeam(targetid) != GROUP_TEAM_ROBBERS)
+        return 0;
+
+
+    new Float:playerOldPosX, Float:playerOldPosY, Float:playerOldPosZ;
+    GetPlayerPos(targetid, playerOldPosX, playerOldPosY, playerOldPosZ);
+
+    SetTimerEx(#OnPlayerTryToBreakCuff, 5000, false, "ifff", targetid, playerOldPosX, playerOldPosY, playerOldPosZ);
+    return 1;
+}
+
+forward OnPlayerTryToBreakCuff(playerid, Float:x, Float:y, Float:z);
+public OnPlayerTryToBreakCuff(playerid, Float:x, Float:y, Float:z)
+{
+
+    if (GetPlayerDistanceFromPoint(playerid, x, y, z) > 3.0)
+    {
+        SendClientMessage(playerid, 0xFFFFFFAA, "Break cuff failed, you moved.");
+        return 0;
+    }
+
+    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+    return 1;
+
 }
