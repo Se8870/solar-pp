@@ -23,33 +23,6 @@
 */
 
 #include <a_samp>
-
-// RESERVED FOR TEH GREATEST ANTI CHEAT start
-
-// This shit keep bragging about literal array lmao
-#pragma warning disable 214
-#pragma warning disable 239
-
-// AC Config
-#define     AC_USE_AMMUNATIONS          false
-#define     AC_USE_RESTAURANTS          false
-#define     AC_USE_VENDING_MACHINES     false
-#define     AC_USE_TUNING_GARAGES       false
-#define     AC_USE_PAYNSPRAY            false
-
-#define     AC_USE_CASINOS              false
-#define     AC_USE_NPC                  false
-
-#define     AC_MAX_CONNECTS_FROM_IP     5
-#define     AC_MAX_RCON_LOGIN_ATTEMPT   0
-#define     AC_MAX_PING                 2000
-
-#include <YSI_Visual\y_dialog>
-#include <streamer>
-#include <nex-ac>
-
-// RESERVED FOR TEH GREATEST ANTI CHEAT end
-
 #include <init>
 
 main() 

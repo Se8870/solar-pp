@@ -8,6 +8,32 @@
 
 #define _inc_init_included
 
+// This shit keep bragging about literal array lmao
+#pragma warning disable 214
+#pragma warning disable 239
+
+// AC Config
+#define     AC_USE_AMMUNATIONS          false
+#define     AC_USE_RESTAURANTS          false
+#define     AC_USE_VENDING_MACHINES     false
+#define     AC_USE_TUNING_GARAGES       false
+#define     AC_USE_PAYNSPRAY            false
+
+#define     AC_USE_CASINOS              false
+#define     AC_USE_NPC                  false
+
+#define     AC_MAX_CONNECTS_FROM_IP     5
+#define     AC_MAX_RCON_LOGIN_ATTEMPT   0
+#define     AC_MAX_PING                 2000
+
+// I place this here because there is unknown error, of course i suspect nex-ac is the culprit.
+// But until it's fixed, it stays here
+#include <sscanf2>
+#include <YSI_Visual\y_dialog>
+
+#include <streamer>
+#include <nex-ac>
+
 #include <lobby>
 #include <team>
 #include <game>
