@@ -103,6 +103,16 @@ hook OnGamePreparing(Lobby:id)
 
 hook OnPlayerDamageDone(playerid, Float:amount, issuerid, weapon, bodypart)
 {
+	if (weapon == 23 && GetPlayerGroupTeam(playerid) == GROUP_TEAM_POLICE) {
+	    PlayerPlaySoundEx(playerid, 6003);
+        TogglePlayerControllable(playerid, false);
+        
+        ApplyAnimation(damagedid, "CRACK", "crckdeth4", 4.0, 0, 0, 0, 1, 0, 1);
+        GameTextForPlayer(playerid, "~r~stunned~w~", ReturnPlayerName(playerid)), 3000, 5);
+
+        SetTimerEx(#OnPlayerUnfreeze, 3000, false, "i", playerid);
+	}
+
     PlayerPlaySound(playerid, 17802, 0.0, 0.0, 0.0);
     PlayerPlaySound(issuerid, 17802, 0.0, 0.0, 0.0);
 
