@@ -9,10 +9,52 @@
 	"output": "gamemodes/main.amx",
 	"dependencies": [
 		"pawn-lang/samp-stdlib",
-		"pawn-lang/YSI-Includes@5.x"
+		"pawn-lang/YSI-Includes@5.x",
+		"oscar-broman/samp-weapon-config",
+		"samp-incognito/samp-streamer-plugin:v2.9.5",
+		"NexiusTailer/Nex-AC"
 	],
 	"local": true,
+	"runtime": {
+		"version": "0.3.7",
+		"mode": "server",
+		"rcon_password": "hardestpasswordknowntoman121313234",
+		"port": 7777,
+		"hostname": "SA-MP Server",
+		"maxplayers": 60,
+		"language": "",
+		"mapname": "San Andreas",
+		"weburl": "www.sa-mp.com",
+		"gamemodetext": "Unknown",
+		"announce": true,
+		"lanmode": false,
+		"query": true,
+		"rcon": false,
+		"logqueries": false,
+		"sleep": 5,
+		"maxnpc": 0,
+		"stream_rate": 1000,
+		"stream_distance": 200,
+		"onfoot_rate": 30,
+		"incar_rate": 30,
+		"weapon_rate": 30,
+		"chatlogging": true,
+		"timestamp": true,
+		"messageholelimit": 3000,
+		"messageslimit": 500,
+		"ackslimit": 3000,
+		"playertimeout": 10000,
+		"minconnectiontime": 0,
+		"lagcompmode": 1,
+		"connseedtime": 300000,
+		"db_logging": false,
+		"db_log_queries": false,
+		"conncookies": true,
+		"cookielogging": false,
+		"output": true
+	},
 	"build": {
+		"name": "",
 		"includes": [
 			"gamemodes",
 			"gamemodes/core",
@@ -21,15 +63,9 @@
 			"gamemodes/core/team"
 		],
 		"constants": {
-			"YSI_NO_HEAP_MALLOC": "",
-			"MAX_PLAYERS": "60"
-		}
-	},
-	"runtime": {
-		"version": "0.3.7",
-		"mode": "server",
-		"rcon_password": "hardestpasswordknowntoman121313234",
-		"port": 7777,
-		"maxplayers": 60
+			"MAX_PLAYERS": "60",
+			"YSI_NO_HEAP_MALLOC": ""
+		},
+		"compiler": {}
 	}
 }

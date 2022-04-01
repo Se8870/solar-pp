@@ -88,11 +88,8 @@ PutPlayerInLobby(playerid, Lobby:id)
     Group_SetPlayer(g_sLobbyLists[id], playerid, true);
     g_sPlayerCurrentLobby{playerid} = id;
 
-    // Spawn them just in case.
+    // Prepare a spawn-point them just in case.
     SetSpawnInfo(playerid, 0, 1, 1726.18, -1641.00, 20.23, 0.0, 0, 0, 0, 0, 0, 0);
-    
-    SetPlayerInterior(playerid, 18);
-    SetPlayerVirtualWorld(playerid, _:id + 100);
 
     // If there is spectating code, and the player not yet spawned
     // Just toggle it off, it'll trigger OnPlayerSpawn and SetSpawnInfo
@@ -111,9 +108,6 @@ PutPlayerInCurrentLobby(playerid)
     
     // Spawn them just in case.
     SetSpawnInfo(playerid, 0, 1, 1726.18, -1641.00, 20.23, 0.0, 0, 0, 0, 0, 0, 0);
-    
-    SetPlayerInterior(playerid, 18);
-    SetPlayerVirtualWorld(playerid, _:g_sPlayerCurrentLobby{playerid} + 100);
 
     // Detects method of spawning
     if (IsPlayerSpectating(playerid))
@@ -130,5 +124,16 @@ PutPlayerInCurrentLobby(playerid)
 ResetPlayerLobby(playerid)
 {
     Group_SetPlayer(g_sLobbyLists[g_sPlayerCurrentLobby{playerid}], playerid, false);
+    return 1;
+}
+
+#include <YSI_Coding\y_hooks>
+hook OnPlayerSpawn(playerid)
+{
+    if (g_sPlayerCurrentLobby{playerid} != INVALID_LOBBY_ID)
+    {
+        SetPlayerInterior(playerid, 18);
+        SetPlayerVirtualWorld(playerid, _:g_sPlayerCurrentLobby{playerid} + LOBBY_BASE_WORLD_ID);
+    }
     return 1;
 }

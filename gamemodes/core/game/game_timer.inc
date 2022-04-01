@@ -9,85 +9,87 @@
 #define _inc_game_timer_included
 
 #include <YSI_Coding\y_timers>
+#include <YSI_Core\y_utils>
 
-static
-    g_sLobbyRemainderTime[MAX_LOBBY char],
-    g_sGameRemainderTime[MAX_LOBBY char];
-
-task GameUpdate[1000]()
+task Game_CoreTimer[1000]()
 {
+    static 
+        e_LOBBY_GAME_STATUS:gameStatusPerLobby[MAX_LOBBY char], 
+        lobbyRemainderTime[MAX_LOBBY char],
+        gameRemainderTime[MAX_LOBBY char];
+
+    // Handle all lobby whenever possible
     for (new Lobby:i = Lobby:0; i < MAX_LOBBY; i ++)
     {
-        if (GetLobbyGameStatus(i) == GAME_STATUS_QUEUE)
+        if (gameStatusPerLobby{i} == GAME_STATUS_QUEUE)
         {
-            if (g_sLobbyRemainderTime{i} < 1)
+            if (lobbyRemainderTime{i} < 1)
             {
-                SetLobbyGameStatus(i, GAME_STATUS_PREPARING);
+               gameStatusPerLobby{i} = GAME_STATUS_PREPARING;
             }
 
             // After above checking, we check again if it's still below 5 but not 0
-            if (g_sLobbyRemainderTime{i} < 6 && g_sLobbyRemainderTime{i} != 0)
+            if (lobbyRemainderTime{i} < 6 && lobbyRemainderTime{i} != 0)
             {
                 // Fetch any player from each lobbies to count down
                 foreach (new j : GroupMember(GetLobbyGroupId(i)))
                 {
-                    GameTextForPlayer(j, va_return("Game starting in: %d seconds.", g_sLobbyRemainderTime{i}), 1000, 6);
+                    GameTextForPlayer(j, va_return("Game starting in: %d seconds.", lobbyRemainderTime{i}), 1000, 6);
                 }
             }
-            g_sLobbyRemainderTime{i} --;
+            lobbyRemainderTime{i} --;
         }
-        else if (GetLobbyGameStatus(i) == GAME_STATUS_PREPARING)
+        else if (gameStatusPerLobby{i} == GAME_STATUS_PREPARING)
         {
-            if (GetPlayerLobbyCount(i) < 4)
+            if (GetPlayerLobbyCount(i) != 2)
             {
                 // Send message for ALL people from the lobby
                 SendCurrentLobbyMessage(i, "Game cannot started due to lack of players.", 1000, 1);
                 
                 // Reset the timer, skip to the next lobby.
-                g_sLobbyRemainderTime{i} = RandomMinMax(30, 50);
-                SetLobbyGameStatus(i, GAME_STATUS_QUEUE);
+                lobbyRemainderTime{i} = RandomMinMax(30, 50);
+                gameStatusPerLobby{i} = GAME_STATUS_QUEUE;
                 continue;
             }
             else
             {
-                PrepareGameForLobbyId(i);
-                SpreadPlayers(i);
+                foreach (new j : GroupMember(GetLobbyGroupId(i)))
+                {
+                    PutPlayerInQueue(j, i);
+                }
+                SpreadPlayersInLobby(i);
 
-                // Setting up the status before we begin.
-                g_sGameRemainderTime{i} = 600; // 10 minute playtime
-                SetLobbyGameStatus(i, GAME_STATUS_MONITORING);
+                gameRemainderTime{i} = GAME_PLAYTIME;
+                gameStatusPerLobby{i} = GAME_STATUS_MONITORING;
                 continue;
             }
         }
-        else if (GetLobbyGameStatus(i) == GAME_STATUS_MONITORING)
+        else if (gameStatusPerLobby{i} == GAME_STATUS_MONITORING)
         {
-            // Do stuff here
-            if (g_sGameRemainderTime{i} < 1)
+            // UwU
+            if (--gameRemainderTime{i} < 1)
             {
-                SetLobbyGameStatus(i, GAME_STATUS_ENDING);
+                gameStatusPerLobby{i} = GAME_STATUS_ENDING;
                 continue;
             }
 
             if (GetGroupTeamMemberCount(GROUP_TEAM_ROBBERS) == 0 || GetGroupTeamMemberCount(GROUP_TEAM_POLICE) == 0)
             {
-                SetLobbyGameStatus(i, GAME_STATUS_ENDING);
+                gameStatusPerLobby{i} = GAME_STATUS_ENDING;
                 continue;
             }
-            
-            g_sGameRemainderTime{i} --;
         }
-        else if (GetLobbyGameStatus(i) == GAME_STATUS_ENDING)
+        else if (gameStatusPerLobby{i} == GAME_STATUS_ENDING)
         {
             foreach (new pid : GroupMember(GetLobbyGroupId(i)))
             {
-                // Put back to lobby if it's alreay ingame.
+                // Put back to lobby if it's already ingame.
                 if (!ResetPlayerGame(pid))
                     continue;
 
                 PutPlayerInCurrentLobby(pid);
             }
-
-            SetLobbyGameStatus(i, GAME_STATUS_QUEUE);
+            gameStatusPerLobby{i} = GAME_STATUS_QUEUE;
         }
     }
     return 1;
