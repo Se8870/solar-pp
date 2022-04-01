@@ -11,10 +11,10 @@ echo Deleting cache package...
 rmdir /s /q dependencies
 rmdir /s /q %appdata%\sampctl\plugins
 rmdir /s /q %appdata%\sampctl\packages
-echo.
 
 echo Ensuring packages...
 sampctl ensure --update
 
-echo Done!
+echo.
+echo Package have been refreshed, please try "sampctl build" again!
 pause
