@@ -61,7 +61,8 @@
 			"gamemodes/core",
 			"gamemodes/core/game",
 			"gamemodes/core/lobby",
-			"gamemodes/core/team"
+			"gamemodes/core/team",
+			"gamemodes/core/statistics"
 		],
 		"constants": {
 			"MAX_PLAYERS": "60",

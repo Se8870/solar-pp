@@ -30,13 +30,18 @@
 // But until it's fixed, it stays here
 #include <sscanf2>
 #include <YSI_Visual\y_dialog>
+#include <nex-ac>
 
 #include <streamer>
-#include <nex-ac>
 
 #include <lobby>
 #include <team>
 #include <game>
+
+#include <statistics>
+
+static
+	Text3D:g_sPlayerTextName[MAX_PLAYERS];
 
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit()
@@ -59,10 +64,25 @@ hook OnGameModeInit()
     if (Init_Lobby()) moduleCount ++;
     if (Init_Team()) moduleCount ++;
     if (Init_Game()) moduleCount ++;
+	if (Init_Statistics()) moduleCount ++;
 
     // Print the result.
     printf("Loaded %d modules.", moduleCount);
     return 1;
+}
+
+UpdateNameTagColorForPlayer(playerid, color)
+{
+	Update3DTextLabelText(g_sPlayerTextName[playerid], color, va_return("%s", ReturnPlayerName(playerid)));
+	return 1;
+}
+
+hook OnPlayerConnect(playerid)
+{
+	SetPlayerColor(playerid, 0xFFFFFF);
+	g_sPlayerTextName[playerid] = CreateDynamic3DTextLabel(va_return("%s", ReturnPlayerName(playerid)), 0xFFFFFFFF, 0.0, 0.0, 0.4, 10.0, playerid, INVALID_VEHICLE_ID, 0, -1, -1);
+	//Streamer_ToggleIdleUpdate(playerid, true);
+	return 1;
 }
 
 hook OnPlayerRequestClass(playerid, classid)
@@ -74,8 +94,8 @@ hook OnPlayerRequestClass(playerid, classid)
 		SetPlayerTime(playerid, 12, 00);
 		
         // This bug, never toggle
-        EnableHealthBarForPlayer(pid, false);
-		
+        EnableHealthBarForPlayer(playerid, false);
+
 		// Toggle spectate and show the menus.
 		TogglePlayerSpectating(playerid, true);
 		ShowLobbyMenuForPlayer(playerid);
@@ -88,5 +108,13 @@ hook OnPlayerRequestClass(playerid, classid)
 		PutPlayerInCurrentLobby(playerid);
 		return 1;
 	}
+	return 1;
+}
+
+hook OnPlayerDisconnect(playerid, reason)
+{
+	if (IsValidDynamic3DTextLabel(g_sPlayerTextName[playerid]))
+		DestroyDynamic3DTextLabel(g_sPlayerTextName[playerid]);
+
 	return 1;
 }
