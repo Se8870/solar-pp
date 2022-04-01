@@ -11,6 +11,8 @@
 Init_Statistics()
 {
     Init_StatisticsGui();
+    print("Module \"statistics.inc\"... OK");
+    return 1;
 }
 
 #include <YSI_Coding\y_hooks>
