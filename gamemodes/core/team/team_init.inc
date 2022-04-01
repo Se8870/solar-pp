@@ -23,8 +23,8 @@ Init_Team()
     g_sGroupLists[GROUP_TEAM_ROBBERS] = Group_Create("Robber Team");
 
     // Set each group colors
-    Group_SetColor(g_sGroupLists[GROUP_TEAM_POLICE], 0x19639FAA);
-    Group_SetColor(g_sGroupLists[GROUP_TEAM_ROBBERS], 0xFFFFFFAA);
+    Group_SetColor(g_sGroupLists[GROUP_TEAM_POLICE], 0x19639FFF);
+    Group_SetColor(g_sGroupLists[GROUP_TEAM_ROBBERS], 0xFF0000FF);
     print("Module \"teams.inc\"... OK");
     return 1;
 }
@@ -50,7 +50,7 @@ ResetPlayerGroupTeam(playerid)
     Group_SetPlayer(g_sGroupLists[GROUP_TEAM_POLICE], playerid, false);
 
     // Reset their colors too
-    SetPlayerColor(playerid, 0xFFFFFFAA);
+    SetPlayerColor(playerid, 0xFFFFFFFF);
     return 1;
 }
 
@@ -59,7 +59,21 @@ GetPlayerGroupTeam(playerid)
     return (Group_GetPlayer(g_sGroupLists[GROUP_TEAM_ROBBERS], playerid) ? GROUP_TEAM_ROBBERS : GROUP_TEAM_POLICE);
 }
 
-SetPlayerGroupTeam(playerid, team, bool:toggle)
+PutPlayerInRobberTeam(playerid)
+{
+    SetPlayerSkin(playerid, 152);
+    SetPlayerColor(playerid, 0xFF0000FF);
+    return SetPlayerGroupTeam(playerid, GROUP_TEAM_ROBBERS, true);
+}
+
+PutPlayerInPoliceTeam(playerid)
+{
+    SetPlayerSkin(playerid, 246);
+    SetPlayerColor(playerid, 0x19639FFF);
+    return SetPlayerGroupTeam(playerid, GROUP_TEAM_POLICE, true);
+}
+
+static SetPlayerGroupTeam(playerid, team, bool:toggle)
 {
     // Give false return if the team out of range.
     if (team != GROUP_TEAM_ROBBERS && team != GROUP_TEAM_POLICE)
@@ -73,18 +87,7 @@ SetPlayerGroupTeam(playerid, team, bool:toggle)
     ResetPlayerGroupTeam(playerid);
     Group_SetPlayer(g_sGroupLists[team], playerid, toggle);
 
-    // Set team and color
+    // Set team 
     SetPlayerTeam(playerid, team);
-    SetPlayerColor(playerid, Group_GetColor(g_sGroupLists[team]));
     return 1;
-}
-
-PutPlayerInRobberTeam(playerid)
-{
-    return SetPlayerGroupTeam(playerid, GROUP_TEAM_ROBBERS, true);
-}
-
-PutPlayerInPoliceTeam(playerid)
-{
-    return SetPlayerGroupTeam(playerid, GROUP_TEAM_POLICE, true);
 }
