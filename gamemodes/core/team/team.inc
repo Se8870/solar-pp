@@ -12,6 +12,7 @@
 //          Name                    Value
 #define     GROUP_TEAM_ROBBERS      1
 #define     GROUP_TEAM_POLICE       2
+#define     GROUP_TEAM_CUFFED       3
 #define     GROUP_TEAM_UNKNOWN      0
 
 #include <team_init>

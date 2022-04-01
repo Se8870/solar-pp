@@ -16,7 +16,7 @@ static
     bool:g_sPlayerInGame[MAX_PLAYERS char],
     bool:g_sPlayerRobberShotFirst[MAX_PLAYERS char],
     Text3D:g_sPlayerHealthBar[MAX_PLAYERS],
-    Text3D:g_sPlayerTextName[MAX_PLAYERS];
+    Text3D:g_sRobberStatus[MAX_PLAYERS];
 
 static stock
     gsc_szPlayerHealthBar[][] = {
@@ -33,16 +33,6 @@ static stock
         "||||||||||"
     };
 
-ResetPlayerGame(playerid)
-{
-    if (g_sPlayerInGame{playerid} == false)
-        return 0;
-
-    g_sPlayerInGame{playerid} = false;
-    ResetPlayerGroupTeam(playerid);
-    return 1;
-}
-
 IsPlayerInGame(playerid)
 {
     return g_sPlayerInGame{playerid};
@@ -53,15 +43,26 @@ IsPlayerInGame(playerid)
 public OnPlayerDamage(&playerid, &Float:amount, &issuerid, &weapon, &bodypart)
 {
     // This matters for avoiding fucking false positive results
-    if (!g_sPlayerInGame{playerid}) return false;
+    if (!g_sPlayerInGame{playerid}) 
+        return false;
 
-    // Disable damage for robbers who haven't been shooted
-    if (GetPlayerGroupTeam(playerid) == GROUP_TEAM_ROBBERS && GetPlayerGroupTeam(issuerid) == GROUP_TEAM_POLICE && !g_sPlayerRobberShotFirst{playerid}) return false;
-    
-    // disables damage if the weapon is tazer
-	if (weapon == 23 && GetPlayerGroupTeam(playerid) == GROUP_TEAM_POLICE) 
+    if (issuerid != INVALID_PLAYER_ID)
     {
-        amount = 0.0;
+        // disables damage if the weapon is tazer
+        if (weapon == 23 && GetPlayerGroupTeam(issuerid) == GROUP_TEAM_POLICE) 
+        {
+            PlayerPlaySound(playerid, 6003, 0.0, 0.0, 0.0);
+            TogglePlayerControllable(playerid, false);
+            
+            // Preload anim
+            ApplyAnimation(playerid, "CRACK", "null", 4.0, 0, 0, 0, 1, 0, 1);
+            ApplyAnimation(playerid, "CRACK", "crckdeth4", 4.0, 0, 0, 0, 1, 0, 1);
+
+            GameTextForPlayer(playerid, "~r~stunned~w~", 3000, 5);
+
+            SetTimerEx(#OnPlayerUnfreeze, 3000, false, "i", playerid);
+            return false;
+        }
     }
     return true;
 }
@@ -74,7 +75,8 @@ public OnPlayerUnfreeze(playerid)
 }
 
 #include <YSI_Coding\y_hooks>
-hook OnGameModeInit() {
+hook OnGameModeInit() 
+{
     SetVehiclePassengerDamage(true);
     SetDisableSyncBugs(true);
     ShowNameTags(false);
@@ -83,8 +85,17 @@ hook OnGameModeInit() {
     return 1;
 }
 
-hook OnPlayerConnect(playerid)
+hook OnPlayerDisconnect(playerid, reason)
 {
+    va_SendClientMessageToAll(0xFFFFFFAA, "Player %s(%d) Leaves the game", ReturnPlayerName(playerid), playerid);
+
+    if (IsValidDynamic3DTextLabel(g_sPlayerHealthBar[playerid]))
+        DestroyDynamic3DTextLabel(g_sPlayerHealthBar[playerid]);
+
+    if (IsValidDynamic3DTextLabel(g_sRobberStatus[playerid]))
+        DestroyDynamic3DTextLabel(g_sRobberStatus[playerid]);
+
+    ResetPlayerGroupTeam(playerid);
     g_sPlayerInGame{playerid} = false;
     return 1;
 }
@@ -93,28 +104,60 @@ hook OnGamePreparing(Lobby:id)
 {
     foreach (new pid : GroupMember(GetLobbyGroupId(id)))
     {
+        if (GetPlayerGroupTeam(pid) == GROUP_TEAM_ROBBERS)
+        {
+            g_sRobberStatus[pid] = CreateDynamic3DTextLabel("(( Cannot be shooted ))", 0xFFFFFFFF,  0.0, 0.0, 0.3, 10.0, pid, INVALID_VEHICLE_ID, 0, -1, -1);
+        }
         g_sPlayerHealthBar[pid] = CreateDynamic3DTextLabel(va_return("[{FF00FF}%s{FFFFFF}]", ReturnPlayerHealthBar(pid)), 0xFFFFFFFF,  0.0, 0.0, 0.1, 10.0, pid, INVALID_VEHICLE_ID, 0, -1, -1);
-        g_sPlayerTextName[pid] = CreateDynamic3DTextLabel(va_return("%s", ReturnPlayerName(pid)), GetPlayerColor(pid), 0.0, 0.0, 0.2, 10.0, pid, INVALID_VEHICLE_ID, 0, -1, -1);
+        g_sPlayerInGame{pid} = true;
     }
     return 1;
 }
 
+hook OnGameEnded(Lobby:id)
+{
+    foreach (new pid : GroupMember(GetLobbyGroupId(id)))
+    {
+        if (IsValidDynamic3DTextLabel(g_sPlayerHealthBar[pid]))
+            DestroyDynamic3DTextLabel(g_sPlayerHealthBar[pid]);
+    
+        if (IsValidDynamic3DTextLabel(g_sRobberStatus[pid]))
+            DestroyDynamic3DTextLabel(g_sRobberStatus[pid]);
+
+        ResetPlayerGroupTeam(pid);
+        PutPlayerInCurrentLobby(pid);
+        g_sPlayerInGame{pid} = false;
+    }
+    return 1;
+}
+
+hook OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ)
+{
+    if (hitid != INVALID_PLAYER_ID)
+    {
+        printf("hitid = %d | playerid = %d", hitid, playerid);
+        if (!g_sPlayerRobberShotFirst{playerid} && GetPlayerGroupTeam(hitid) == GROUP_TEAM_POLICE)
+        {
+            if (IsValidDynamic3DTextLabel(g_sRobberStatus[playerid]))
+                DestroyDynamic3DTextLabel(g_sRobberStatus[playerid]);
+
+            printf("Removing robber status");
+            g_sPlayerRobberShotFirst{playerid} = true;
+            return true;
+        }
+
+        if (!g_sPlayerRobberShotFirst{hitid} && GetPlayerGroupTeam(playerid) == GROUP_TEAM_POLICE) 
+        {
+            printf("Police attempt to shoot robber who doesn't shot first");
+            return false;
+        }
+    }
+    return true;
+
+}
+
 hook OnPlayerDamageDone(playerid, Float:amount, issuerid, weapon, bodypart)
 {
-	if (weapon == 23 && GetPlayerGroupTeam(playerid) == GROUP_TEAM_POLICE) {
-	    PlayerPlaySound(playerid, 6003, 0.0, 0.0, 0.0);
-        TogglePlayerControllable(playerid, false);
-        
-        // Preload anim
-        ApplyAnimation(playerid, "CRACK", "null", 4.0, 0, 0, 0, 1, 0, 1);
-        ApplyAnimation(playerid, "CRACK", "crckdeth4", 4.0, 0, 0, 0, 1, 0, 1);
-
-        GameTextForPlayer(playerid, "~r~stunned~w~", 3000, 5);
-
-        SetTimerEx(#OnPlayerUnfreeze, 3000, false, "i", playerid);
-        return 1;
-	}
-
     PlayerPlaySound(playerid, 17802, 0.0, 0.0, 0.0);
     PlayerPlaySound(issuerid, 17802, 0.0, 0.0, 0.0);
 
@@ -122,14 +165,11 @@ hook OnPlayerDamageDone(playerid, Float:amount, issuerid, weapon, bodypart)
     return 1;
 }
 
-hook OnPlayerStateChange(playerid, newstate, oldstate)
+hook OnPlayerDeathFinished(playerid)
 {
-    if (newstate == PLAYER_STATE_WASTED)
-    {
-        ResetPlayerGroupTeam(playerid);
-        PutPlayerInCurrentLobby(playerid);
-        g_sPlayerInGame{playerid} = false;
-    }
+    ResetPlayerGroupTeam(playerid);
+    PutPlayerInCurrentLobby(playerid);
+    g_sPlayerInGame{playerid} = false;
     return 1;
 }
 

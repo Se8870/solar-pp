@@ -73,22 +73,29 @@ task Game_CoreTimer[1000]()
                 continue;
             }
 
-            if (GetGroupTeamMemberCount(GROUP_TEAM_ROBBERS) == 0 || GetGroupTeamMemberCount(GROUP_TEAM_POLICE) == 0)
+            if (gameRemainderTime{i} < 599)
             {
-                gameStatusPerLobby{i} = GAME_STATUS_ENDING;
-                continue;
+                if(GetGroupTeamMemberCount(GROUP_TEAM_ROBBERS) == 0 || GetGroupTeamMemberCount(GROUP_TEAM_POLICE) == 0)
+                {
+                    printf("The game is about to end for some reason!");
+                    gameStatusPerLobby{i} = GAME_STATUS_ENDING;
+                    continue;
+                }
+
+                if (GetGroupTeamMemberCount(GROUP_TEAM_CUFFED) > GetGroupTeamMemberCount(GROUP_TEAM_ROBBERS))
+                {
+                    gameStatusPerLobby{i} = GAME_STATUS_ENDING;
+                    continue;
+                }
             }
         }
         else if (gameStatusPerLobby{i} == GAME_STATUS_ENDING)
         {
-            foreach (new pid : GroupMember(GetLobbyGroupId(i)))
-            {
-                // Put back to lobby if it's already ingame.
-                if (!ResetPlayerGame(pid))
-                    continue;
+            // Call our callback
+            CallLocalFunction(#OnGameEnded, "i", _:i);
 
-                PutPlayerInCurrentLobby(pid);
-            }
+            // Reset the timer, skip to the next lobby.
+            lobbyRemainderTime{i} = RandomMinMax(30, 50);
             gameStatusPerLobby{i} = GAME_STATUS_QUEUE;
         }
     }

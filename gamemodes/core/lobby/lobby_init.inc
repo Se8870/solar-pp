@@ -13,7 +13,7 @@
 
 static
     Group:g_sLobbyLists[MAX_LOBBY], // It seems like we cannot do anything much if the data is packed
-    Lobby:g_sPlayerCurrentLobby[MAX_PLAYERS char] = Lobby:-1;
+    Lobby:g_sPlayerCurrentLobby[MAX_PLAYERS char] = {INVALID_LOBBY_ID, ...};
 
 static stock g_sPlayerLobbyName[MAX_LOBBY][MAX_LOBBY_NAME] = {
     "Archilles",
@@ -97,6 +97,9 @@ PutPlayerInLobby(playerid, Lobby:id)
     {
         TogglePlayerSpectating(playerid, false);
     }
+
+    // Call this to trigger statistics
+    CallLocalFunction(#OnPlayerJoinedLobby ,"i", playerid);
     return 1;
 }
 
@@ -107,23 +110,15 @@ PutPlayerInCurrentLobby(playerid)
         return 0;
     
     // Spawn them just in case.
-    SetSpawnInfo(playerid, 0, 1, 1726.18, -1641.00, 20.23, 0.0, 0, 0, 0, 0, 0, 0);
-
-    // Detects method of spawning
-    if (IsPlayerSpectating(playerid))
-    {
-        TogglePlayerSpectating(playerid, false);
-    }
-    else
-    {
-        SpawnPlayer(playerid);
-    }
+    //SetSpawnInfo(playerid, 0, 1, 1726.18, -1641.00, 20.23, 0.0, 0, 0, 0, 0, 0, 0);
+    SpawnPlayer(playerid);
     return 1;
 }
 
 ResetPlayerLobby(playerid)
 {
     Group_SetPlayer(g_sLobbyLists[g_sPlayerCurrentLobby{playerid}], playerid, false);
+    g_sPlayerCurrentLobby{playerid} = INVALID_LOBBY_ID;
     return 1;
 }
 
@@ -135,5 +130,11 @@ hook OnPlayerSpawn(playerid)
         SetPlayerInterior(playerid, 18);
         SetPlayerVirtualWorld(playerid, _:g_sPlayerCurrentLobby{playerid} + LOBBY_BASE_WORLD_ID);
     }
+    return 1;
+}
+
+hook OnPlayerDisconnect(playerid, reason)
+{
+    ResetPlayerLobby(playerid);
     return 1;
 }

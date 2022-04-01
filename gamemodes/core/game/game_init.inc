@@ -63,9 +63,6 @@ SpreadPlayersInLobby(Lobby:id)
         SetPlayerVirtualWorld(pid, _:id + GAME_BASE_WORLD_ID);
         PutPlayerInVehicle(pid, g_sRobbersVehicles, GetVehicleNextSeat(g_sRobbersVehicles, 0));
 
-        // We remove the player from queue
-        Iter_Remove(QueuePlayer[id], pid);
-
         // Add it to the robber team
         PutPlayerInRobberTeam(pid);
 
@@ -76,6 +73,9 @@ SpreadPlayersInLobby(Lobby:id)
         GivePlayerWeapon(pid, 1, 1);
 
         printf("The player %d should be in robbers car", pid);
+        
+        // We remove the player from queue
+        Iter_Remove(QueuePlayer[id], pid);
     }
 
     new leftoverCount;
@@ -114,7 +114,7 @@ SpreadPlayersInLobby(Lobby:id)
             {
                     
                 // Set stuff first
-                SetPlayerPos(pid, 1572.7791, -1625.1616, 13.3828);
+                //SetPlayerPos(pid, 1572.7791, -1625.1616, 13.3828);
                 SetPlayerInterior(pid, 0);
                 SetPlayerVirtualWorld(pid, _:id + GAME_BASE_WORLD_ID);
 
@@ -123,7 +123,7 @@ SpreadPlayersInLobby(Lobby:id)
         }
         
         // Set stuff first
-        SetPlayerPos(pid, 1572.8396, -1630.3389, 13.3828);
+        //SetPlayerPos(pid, 1572.8396, -1630.3389, 13.3828);
         SetPlayerInterior(pid, 0);
         SetPlayerVirtualWorld(pid, _:id + GAME_BASE_WORLD_ID);
 
@@ -134,6 +134,7 @@ SpreadPlayersInLobby(Lobby:id)
         
         // Set the gun too!
         GivePlayerWeapon(pid, 31, 5000);
+        GivePlayerWeapon(pid, 25, 5000);
         GivePlayerWeapon(pid, 23, 5000);
         GivePlayerWeapon(pid, 3, 1);
 
