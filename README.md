@@ -9,6 +9,7 @@ Original purposes was for our server april fools joke but i guess i kinda want t
 - [x] built from scratch
 - [x] Lobby system
 - [ ] Login/Register system
+- [ ] Admin System
 - [x] Core game functions
     - [x] Add team system
     - [x] Spreading each player to corresponding group
