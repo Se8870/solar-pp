@@ -15,7 +15,8 @@ task Game_CoreTimer[1000]()
 {
     static 
         e_LOBBY_GAME_STATUS:gameStatusPerLobby[MAX_LOBBY char], 
-        lobbyRemainderTime[MAX_LOBBY char];
+        lobbyRemainderTime[MAX_LOBBY char],
+        gameRemainderTime[MAX_LOBBY char];
 
     // Handle all lobby whenever possible
     for (new Lobby:i = Lobby:0; i < MAX_LOBBY; i ++)
@@ -56,8 +57,9 @@ task Game_CoreTimer[1000]()
                 {
                     PutPlayerInQueue(j, i);
                 }
-                
                 SpreadPlayersInLobby(i);
+
+                gameRemainderTime{i} = GAME_PLAYTIME;
                 gameStatusPerLobby{i} = GAME_STATUS_MONITORING;
                 continue;
             }
@@ -65,6 +67,30 @@ task Game_CoreTimer[1000]()
         else if (gameStatusPerLobby{i} == GAME_STATUS_MONITORING)
         {
             // UwU
+            if (--gameRemainderTime{i} < 1)
+            {
+                gameStatusPerLobby{i} = GAME_STATUS_ENDING;
+                continue;
+            }
+
+            if (GetGroupTeamMemberCount(GROUP_TEAM_ROBBERS) == 0 || GetGroupTeamMemberCount(GROUP_TEAM_POLICE) == 0)
+            {
+                gameStatusPerLobby{i} = GAME_STATUS_ENDING;
+                continue;
+            }
+        }
+        else if (gameStatusPerLobby{i} == GAME_STATUS_ENDING)
+        {
+            foreach (new pid : GroupMember(GetLobbyGroupId(i)))
+            {
+                // Put back to lobby if it's already ingame.
+                if (!ResetPlayerGame(pid))
+                    continue;
+
+                PutPlayerInCurrentLobby(pid);
+            }
+            gameStatusPerLobby{i} = GAME_STATUS_QUEUE;
         }
     }
+    return 1;
 }
