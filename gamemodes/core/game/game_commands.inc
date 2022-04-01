@@ -9,7 +9,6 @@
 
 #define _inc_game_commands_included
 
-#include <sscanf2>
 #include <YSI_Visual\y_commands>
 
 // Cuff command
