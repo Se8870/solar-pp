@@ -109,6 +109,9 @@ PutPlayerInCurrentLobby(playerid)
     if (g_sPlayerCurrentLobby{playerid} == INVALID_LOBBY_ID)
         return 0;
     
+    if (GetPlayerSkin(playerid) != 1)
+        SetPlayerSkin(playerid, 1);
+
     // Spawn them just in case.
     //SetSpawnInfo(playerid, 0, 1, 1726.18, -1641.00, 20.23, 0.0, 0, 0, 0, 0, 0, 0);
     SpawnPlayer(playerid);

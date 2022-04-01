@@ -135,7 +135,6 @@ hook OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, 
 {
     if (hitid != INVALID_PLAYER_ID)
     {
-        printf("hitid = %d | playerid = %d", hitid, playerid);
         if (!g_sPlayerRobberShotFirst{playerid} && GetPlayerGroupTeam(hitid) == GROUP_TEAM_POLICE)
         {
             if (IsValidDynamic3DTextLabel(g_sRobberStatus[playerid]))

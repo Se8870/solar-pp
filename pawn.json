@@ -53,7 +53,8 @@
 		"db_log_queries": false,
 		"conncookies": true,
 		"cookielogging": false,
-		"output": true
+		"output": true,
+		"plugins": ["crashdetect"]
 	},
 	"build": {
 		"name": "",
