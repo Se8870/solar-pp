@@ -21,19 +21,19 @@ COMMAND__ cuff(playerid, string:args[], help)
     }
 
     if (!IsPlayerInGame(playerid) || GetPlayerState(playerid) != PLAYER_STATE_ONFOOT || GetPlayerGroupTeam(playerid) != GROUP_TEAM_POLICE)
-        return 0;
+        return 1;
 
     new targetid;
     if (sscanf(args, "r", targetid))
     {
         SendClientMessage(playerid, 0xFFFFFFAA, "USAGE: /cuff <playerid/PartOfName>");
-        return 0;
+        return 1;
     }
 
-    if (targetid == INVALID_PLAYER_ID || GetPlayerGroupTeam(playerid) != GROUP_TEAM_ROBBERS)
+    if (targetid == INVALID_PLAYER_ID || GetPlayerGroupTeam(targetid) != GROUP_TEAM_ROBBERS)
     {
         SendClientMessage(playerid, 0xFFFFFFAA, "ERROR: You cannot cuff player that is not part of robbers team.");
-        return 0;
+        return 1;
     }
 
     new Float:playerOldPosX, Float:playerOldPosY, Float:playerOldPosZ;
@@ -54,6 +54,7 @@ public OnPlayerCuff(playerid, Float:x, Float:y, Float:z)
     }
 
     SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CUFFED);
+    PutPlayerInCuffedTeam(playerid);
     //ResetPlayerWeapons(playerid);
 
     SendClientMessage(playerid, 0xFFFFFFAA, "You have been cuffed");
@@ -95,7 +96,17 @@ public OnPlayerTryToBreakCuff(playerid, Float:x, Float:y, Float:z)
         return 0;
     }
 
-    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+    if (random(2) == 1) // 50 : 50 chance
+    {
+        SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+        PutPlayerInRobberTeam(playerid);
+
+        SendClientMessage(playerid, 0xFFFFFFAA, "Break cuff succedeed!");
+    }
+    else
+    {
+        SendClientMessage(playerid, 0xFFFFFFAA, "Break cuff failed!");
+    }
     return 1;
 
 }
