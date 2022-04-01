@@ -8,6 +8,8 @@
 
 #define _inc_statistics_gui_included
 
+#include <progress2>
+
 static  
     Text: g_sStatsTopBox,
     Text: g_sStatsBottomBox,
