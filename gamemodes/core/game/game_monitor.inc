@@ -55,7 +55,8 @@ public OnPlayerDamage(&playerid, &Float:amount, &issuerid, &weapon, &bodypart)
     // This matters for avoiding fucking false positive results
     if (!g_sPlayerInGame{playerid}) return false;
 
-    if (GetPlayerGroupTeam(playerid) == GROUP_TEAM_ROBBERS && !g_sPlayerRobberShotFirst{playerid}) return false;
+    // Disable damage for robbers who haven't been shooted
+    if (GetPlayerGroupTeam(playerid) == GROUP_TEAM_ROBBERS && GetPlayerGroupTeam(issuerid) == GROUP_TEAM_POLICE && !g_sPlayerRobberShotFirst{playerid}) return false;
     
     // disables damage if the weapon is tazer
 	if (weapon == 23 && GetPlayerGroupTeam(playerid) == GROUP_TEAM_POLICE) 
@@ -94,9 +95,6 @@ hook OnGamePreparing(Lobby:id)
     {
         g_sPlayerHealthBar[pid] = CreateDynamic3DTextLabel(va_return("[{FF00FF}%s{FFFFFF}]", ReturnPlayerHealthBar(pid)), 0xFFFFFFFF,  0.0, 0.0, 0.1, 10.0, pid, INVALID_VEHICLE_ID, 0, -1, -1);
         g_sPlayerTextName[pid] = CreateDynamic3DTextLabel(va_return("%s", ReturnPlayerName(pid)), GetPlayerColor(pid), 0.0, 0.0, 0.2, 10.0, pid, INVALID_VEHICLE_ID, 0, -1, -1);
-        
-        // This bug, never toggle
-        // EnableHealthBarForPlayer(pid, true);
     }
     return 1;
 }
@@ -107,10 +105,14 @@ hook OnPlayerDamageDone(playerid, Float:amount, issuerid, weapon, bodypart)
 	    PlayerPlaySound(playerid, 6003, 0.0, 0.0, 0.0);
         TogglePlayerControllable(playerid, false);
         
+        // Preload anim
+        ApplyAnimation(playerid, "CRACK", "null", 4.0, 0, 0, 0, 1, 0, 1);
         ApplyAnimation(playerid, "CRACK", "crckdeth4", 4.0, 0, 0, 0, 1, 0, 1);
+
         GameTextForPlayer(playerid, "~r~stunned~w~", 3000, 5);
 
         SetTimerEx(#OnPlayerUnfreeze, 3000, false, "i", playerid);
+        return 1;
 	}
 
     PlayerPlaySound(playerid, 17802, 0.0, 0.0, 0.0);

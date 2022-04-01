@@ -73,6 +73,9 @@ hook OnPlayerRequestClass(playerid, classid)
 		// Set corresponding time
 		SetPlayerTime(playerid, 12, 00);
 		
+        // This bug, never toggle
+        EnableHealthBarForPlayer(pid, false);
+		
 		// Toggle spectate and show the menus.
 		TogglePlayerSpectating(playerid, true);
 		ShowLobbyMenuForPlayer(playerid);
