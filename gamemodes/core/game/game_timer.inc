@@ -41,7 +41,7 @@ task Game_CoreTimer[1000]()
         }
         else if (gameStatusPerLobby{i} == GAME_STATUS_PREPARING)
         {
-            if (GetPlayerLobbyCount(i) != 2)
+            if (GetPlayerLobbyCount(i) < 4)
             {
                 // Send message for ALL people from the lobby
                 SendCurrentLobbyMessage(i, "Game cannot started due to lack of players.", 1000, 1);
