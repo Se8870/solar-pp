@@ -40,6 +40,8 @@
 
 #include <statistics>
 
+#include <utils\textdraw\watermark>
+
 static
 	Text3D:g_sPlayerTextName[MAX_PLAYERS];
 
