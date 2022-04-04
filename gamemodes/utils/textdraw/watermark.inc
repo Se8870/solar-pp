@@ -1,5 +1,5 @@
 static
-    PlayerText:g_sPlayerWatermark[MAX_PLAYERS][3];
+    Text:g_sPlayerWatermark[MAX_PLAYERS][3];
 
 stock ShowServerWatermark(playerid)
 {
@@ -58,4 +58,5 @@ hook OnPlayerConnect(playerid)
         PlayerTextDrawShow(playerid, g_sPlayerWatermark[playerid][i]);
     }    
     return 1;
+
 }
