@@ -9,6 +9,7 @@
 
 #define _inc_lobby_gui_included
 
+#include <YSI_Server\y_colors>
 #include <YSI_Visual\y_dialog>
 
 ShowLobbyMenuForPlayer(playerid)
@@ -35,12 +36,12 @@ ShowLobbyMenuForPlayer(playerid)
 
         if (!PutPlayerInLobby(playerid, Lobby:listitem))
         {
-            SendClientMessage(playerid, 0xFFFFFFAA, "ERROR: This lobby is full.");
+            SendClientMessage(playerid, X11_TOMATO, "ERROR: This lobby is full.");
             ShowLobbyMenuForPlayer(playerid);
         }
         else
         {
-            SendClientMessage(playerid, 0xFFFFFFAA, "SERVER: Successfully joined the lobby.");
+            SendClientMessage(playerid, X11_LIGHTBLUE, "SERVER:"WHITE" Successfully joined the lobby.");
         }
     }
 

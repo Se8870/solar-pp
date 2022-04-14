@@ -9,6 +9,7 @@
 
 #define _inc_game_commands_included
 
+#include <YSI_Server\y_colors>
 #include <YSI_Visual\y_commands>
 
 // Cuff command
@@ -16,7 +17,7 @@ COMMAND__ cuff(playerid, string:args[], help)
 {
     if (help)
     {
-        SendClientMessage(playerid, 0xFFFFFFAA, "HELP: This command used for cuff");
+        SendClientMessage(playerid, X11_GRAY, "HELP: This command used for cuff");
         return 1;
     }
 
@@ -26,13 +27,13 @@ COMMAND__ cuff(playerid, string:args[], help)
     new targetid;
     if (sscanf(args, "r", targetid))
     {
-        SendClientMessage(playerid, 0xFFFFFFAA, "USAGE: /cuff <playerid/PartOfName>");
+        SendClientMessage(playerid, X11_GRAY, "USAGE: /cuff <playerid/PartOfName>");
         return 1;
     }
 
     if (targetid == INVALID_PLAYER_ID || GetPlayerGroupTeam(targetid) != GROUP_TEAM_ROBBERS)
     {
-        SendClientMessage(playerid, 0xFFFFFFAA, "ERROR: You cannot cuff player that is not part of robbers team.");
+        SendClientMessage(playerid, X11_TOMATO, "ERROR: You cannot cuff player that is not part of robbers team.");
         return 1;
     }
 
@@ -49,7 +50,7 @@ public OnPlayerCuff(playerid, Float:x, Float:y, Float:z)
 
     if (GetPlayerDistanceFromPoint(playerid, x, y, z) > 3.0)
     {
-        SendClientMessage(playerid, 0xFFFFFFAA, "Your distance from target is far away");
+        SendClientMessage(playerid, X11_TOMATO, "ERROR: Your distance from target is far away");
         return 0;
     }
 
@@ -57,7 +58,7 @@ public OnPlayerCuff(playerid, Float:x, Float:y, Float:z)
     PutPlayerInCuffedTeam(playerid);
     //ResetPlayerWeapons(playerid);
 
-    SendClientMessage(playerid, 0xFFFFFFAA, "You have been cuffed");
+    SendClientMessage(playerid, X11_LIGHTBLUE, "CUFF: "WHITE"You have been cuffed");
     return 1;
 }
 
@@ -65,7 +66,7 @@ COMMAND__ uncuff(playerid, string:args[], help)
 {
     if (help)
     {
-        SendClientMessage(playerid, 0xFFFFFFAA, "HELP: This command used for cuff, use \"/cuff <playerid>\" if you wish to uncuff someone");
+        SendClientMessage(playerid, X11_LIGHTBLUE, "HELP:"WHITE" This command used for cuff, use \"/cuff <playerid>\" if you wish to uncuff someone");
         return 1;
     }
 
@@ -92,7 +93,7 @@ public OnPlayerTryToBreakCuff(playerid, Float:x, Float:y, Float:z)
 
     if (GetPlayerDistanceFromPoint(playerid, x, y, z) > 3.0)
     {
-        SendClientMessage(playerid, 0xFFFFFFAA, "Break cuff failed, you moved.");
+        SendClientMessage(playerid, X11_LIGHTBLUE, "CUFF: "WHITE"Break cuff failed, you moved.");
         return 0;
     }
 
@@ -101,11 +102,11 @@ public OnPlayerTryToBreakCuff(playerid, Float:x, Float:y, Float:z)
         SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
         PutPlayerInRobberTeam(playerid);
 
-        SendClientMessage(playerid, 0xFFFFFFAA, "Break cuff succedeed!");
+        SendClientMessage(playerid, X11_LIGHTBLUE, "CUFF: "WHITE"Break cuff succedeed!");
     }
     else
     {
-        SendClientMessage(playerid, 0xFFFFFFAA, "Break cuff failed!");
+        SendClientMessage(playerid, X11_TOMATO, "CUFF: Break cuff failed!");
     }
     return 1;
 
